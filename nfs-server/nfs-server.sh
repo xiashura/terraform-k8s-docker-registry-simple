@@ -3,5 +3,7 @@ docker run                                            \
   -v $PWD/exports.txt:/etc/exports:ro        \
   --cap-add SYS_ADMIN                                 \
   -p 2049:2049                                        \
-  --network e49f52054435 \
+  --network kind \ 
+  --name nfs-server \
+  -d \
   erichough/nfs-server
