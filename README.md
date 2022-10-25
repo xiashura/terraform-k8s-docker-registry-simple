@@ -3,7 +3,7 @@ This repository for practice setup docker registry by using IaC Terraform and cr
 
 # TODO
 1) create storage class into k8s
-- [] nfs storage provider 
+- [x] nfs storage provider 
 - [] aws storage provider
 - [] gcp storage provider
 2) create docker registry 
