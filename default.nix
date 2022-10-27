@@ -3,11 +3,15 @@ with (import <nixpkgs> {});
 let
   init-clusters = pkgs.writeShellScriptBin "init-clusters" ''
     kind create cluster --config=./kind.yml 
-    kind get kubeconfig > config.yml 
+    kind get kubeconfig --name docker-registry-simple > config.yml 
     kubectl create ns tigera-operator
     helm repo add projectcalico https://projectcalico.docs.tigera.io/charts 
     helm install calico projectcalico/tigera-operator --version v3.24.3 --namespace tigera-operator
   '';
+
+  destroy-clusters = pkgs.writeShellScriptBin "destroy-clusters" ''
+    kind delete clusters docker-registry-simple
+  ''
 
   start-nfs-server-docker = pkgs.writeShellScriptBin "start-nfs-server-docker" ''
   docker run                                            \
@@ -26,7 +30,7 @@ let
 in 
 stdenv.mkDerivation {
 
-  KUBECONFIG = "config.yml";
+  KUBECONFIG = "./config.yml";
   
   name = "terraform-k8s-docker-registry-simple";
   buildInputs = [
