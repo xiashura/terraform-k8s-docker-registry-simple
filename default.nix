@@ -13,6 +13,13 @@ let
     kind delete clusters docker-registry-simple
   ''
 
+  init-certs-docker-registry = pkgs.writeShellScriptBin "init-certs-docker-registry" ''
+    openssl req \
+      -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key \
+      -addext "subjectAltName = DNS:localhost" \
+      -x509 -days 365 -out certs/domain.crt
+  ''
+
   start-nfs-server-docker = pkgs.writeShellScriptBin "start-nfs-server-docker" ''
   docker run                                            \
     -v $PWD/nfs_server/data:/data  \
