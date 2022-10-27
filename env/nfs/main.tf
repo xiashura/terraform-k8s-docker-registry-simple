@@ -42,62 +42,14 @@ resource "helm_release" "nfs-subdir-external-provisioner" {
 
 }
 
+module "docker-regisry" {
+  source = "../../modules/docker-registry"
 
-
-
-resource "kubernetes_persistent_volume_claim" "test-claim" {
-  depends_on = [
-    helm_release.nfs-subdir-external-provisioner
-  ]
-  metadata {
-    name      = "test-claim"
-    namespace = var.namespace
-  }
-  spec {
-    storage_class_name = var.storage-class-name-nfs
-    access_modes = [
-      "ReadWriteMany"
-    ]
-    resources {
-      requests = {
-        storage = "100Mi"
-      }
-    }
-  }
+  namespace          = var.namespace
+  secret-path-cert   = "../../certs/registry.crt"
+  secret-path-key    = "../../certs/registry.key"
+  storage-class-name = var.storage-class-name-nfs
 }
 
 
-resource "kubernetes_pod" "test-pod" {
-  depends_on = [
-    kubernetes_persistent_volume_claim.test-claim
-  ]
 
-  metadata {
-    name      = "test-pod"
-    namespace = var.namespace
-  }
-
-  spec {
-    volume {
-      name = "nfs-pvc"
-
-      persistent_volume_claim {
-        claim_name = "test-claim"
-      }
-    }
-
-    container {
-      name    = "test-pod"
-      image   = "busybox:stable"
-      command = ["/bin/sh"]
-      args    = ["-c", "touch /mnt/SUCCESS && exit 0 || exit 1"]
-
-      volume_mount {
-        name       = "nfs-pvc"
-        mount_path = "/mnt"
-      }
-    }
-
-    restart_policy = "Never"
-  }
-}

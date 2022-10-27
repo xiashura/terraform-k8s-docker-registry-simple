@@ -15,7 +15,7 @@ terraform {
 provider "kubernetes" {
 
   config_path    = "../../config.yml"
-  config_context = "kind-kind"
+  config_context = "kind-docker-registry-simple"
 }
 
 
