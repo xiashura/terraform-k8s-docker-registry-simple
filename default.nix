@@ -11,14 +11,14 @@ let
 
   destroy-clusters = pkgs.writeShellScriptBin "destroy-clusters" ''
     kind delete clusters docker-registry-simple
-  ''
+  '';
 
   init-certs-docker-registry = pkgs.writeShellScriptBin "init-certs-docker-registry" ''
     openssl req \
-      -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key \
+      -newkey rsa:4096 -nodes -sha256 -keyout certs/registry.key \
       -addext "subjectAltName = DNS:localhost" \
-      -x509 -days 365 -out certs/domain.crt
-  ''
+      -x509 -days 365 -out certs/registry.crt
+  '';
 
   start-nfs-server-docker = pkgs.writeShellScriptBin "start-nfs-server-docker" ''
   docker run                                            \
@@ -49,5 +49,7 @@ stdenv.mkDerivation {
     init-clusters
     start-nfs-server-docker
     openssl
+    destroy-clusters
+    init-certs-docker-registry
   ];
 }
